@@ -11,11 +11,7 @@
   "files": [
     "src/main.ts",
     "src/main.server.ts",
-    "src/server.ts",
-    "src/app/app.config.ts",
-    "src/app/app.routes.ts",
-    "src/app/app.config.server.ts",
-    "src/app/app.routes.server.ts"
+    "src/server.ts"
   ],
   "include": [
     "src/**/*.d.ts"

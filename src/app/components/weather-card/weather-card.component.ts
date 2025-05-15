@@ -90,9 +90,9 @@ import { WeatherIconComponent } from '../weather-icons/weather-icons.component';
     </div>
   `,
   styles: [`
-    @use 'src/app/styles/variables' as *;
-    @use 'src/app/styles/mixins' as *;
-    @use 'src/app/styles/animations' as animations;
+    @use 'src/app/styles/_variables' as *;
+    @use 'src/app/styles/_mixins' as *;
+    @use 'src/app/styles/_animations' as animations;
     
     :host {
       display: block;

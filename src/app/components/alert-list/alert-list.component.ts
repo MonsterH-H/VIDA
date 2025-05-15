@@ -100,8 +100,8 @@ import { Subscription } from 'rxjs';
     </div>
   `,
   styles: [`
-    @use 'src/app/styles/variables' as *;
-    @use 'src/app/styles/mixins' as *;
+    @use 'src/app/styles/_variables' as *;
+    @use 'src/app/styles/_mixins' as *;
     
     .alert-container {
       max-width: 800px;
