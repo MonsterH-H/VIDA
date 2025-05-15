@@ -1,0 +1,250 @@
+<div class="dashboard" [class.dark-mode]="darkMode">
+  <!-- En-tête avec recherche et marque -->
+  <header class="dashboard-header">  
+    <div class="search-container">
+      <form class="search-form" (ngSubmit)="searchWeather()">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Rechercher une ville..." 
+          [(ngModel)]="cityName" 
+          name="cityName" 
+          [matTooltip]="'Entrez le nom d\'une ville pour voir sa météo'"
+        >
+        <button type="submit" class="search-button">
+          <mat-icon>search</mat-icon>
+          Rechercher
+        </button>
+      </form>
+    </div>
+  </header>
+  
+  <!-- Recherches récentes -->
+  <div class="recent-searches" *ngIf="recentSearches.length > 0">
+    <h3>Recherches récentes</h3>
+    <div class="recent-list">
+      <button *ngFor="let city of recentSearches" (click)="useRecentSearch(city)">
+        <mat-icon>history</mat-icon>
+        {{ city }}
+      </button>
+    </div>
+  </div>
+  
+  <!-- État de chargement -->
+  <div class="loading-state" *ngIf="loading">
+    <mat-spinner [diameter]="50"></mat-spinner>
+    <p>Chargement des données météo pour {{ cityName }}...</p>
+  </div>
+  
+  <!-- État d'erreur -->
+  <div class="error-state" *ngIf="error && !loading">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error }}</p>
+    <button class="search-button" (click)="searchWeather()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+  
+  <!-- Contenu du tableau de bord -->
+  <div class="dashboard-content" *ngIf="weatherData && agricultureData && !loading">
+    <!-- Carte de présentation météo actuelle -->
+    <div class="overview-card">
+      <div class="card-header">
+        <h2>Météo actuelle</h2>
+        <div class="date-time">{{ weatherData.dt * 1000 | date:'EEEE d MMMM, HH:mm' }}</div>
+      </div>
+      
+      <div class="current-weather">
+        <div class="temp-icon">
+          <h3 class="temperature">{{ weatherData.main.temp | number:'1.0-0' }}<span>°C</span></h3>
+          <div class="weather-icon">
+            <img *ngIf="weatherData.weather[0].icon" [src]="getWeatherIconUrl(weatherData.weather[0].icon)" alt="Weather icon">
+            <mat-icon *ngIf="!weatherData.weather[0].icon" [ngClass]="getWeatherClass(weatherData.weather[0].main)">
+              {{ getWeatherIcon(weatherData.weather[0].icon || '01d') }}
+            </mat-icon>
+          </div>
+        </div>
+        
+        <div class="weather-details">
+          <h3 class="weather-condition">{{ weatherData.weather[0].description }}</h3>
+          <p class="feels-like">Ressenti: {{ weatherData.main.feels_like | number:'1.0-0' }}°C</p>
+          
+          <div class="details-grid">
+            <div class="detail-item">
+              <mat-icon>water_drop</mat-icon>
+              <span>Humidité: {{ weatherData.main.humidity }}%</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>air</mat-icon>
+              <span>Vent: {{ weatherData.wind.speed | number:'1.0-1' }} m/s {{ getWindDirection(weatherData.wind.deg) }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>compress</mat-icon>
+              <span>Pression: {{ weatherData.main.pressure }} hPa</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>visibility</mat-icon>
+              <span>Visibilité: {{ weatherData.visibility / 1000 | number:'1.0-1' }} km</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-name">
+            <mat-icon>thermostat</mat-icon>
+            Température
+          </div>
+          <div class="metric-value temperature">
+            {{ weatherData.main.temp | number:'1.0-0' }}<span class="metric-unit">°C</span>
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-name">
+            <mat-icon>water_drop</mat-icon>
+            Humidité
+          </div>
+          <div class="metric-value humidity">
+            {{ weatherData.main.humidity }}<span class="metric-unit">%</span>
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-name">
+            <mat-icon>air</mat-icon>
+            Vent
+          </div>
+          <div class="metric-value wind">
+            {{ weatherData.wind.speed | number:'1.0-1' }}<span class="metric-unit">m/s</span>
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-name">
+            <mat-icon>compress</mat-icon>
+            Pression
+          </div>
+          <div class="metric-value pressure" [ngClass]="getPressureClass(weatherData.main.pressure)">
+            {{ weatherData.main.pressure }}<span class="metric-unit">hPa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Carte des prévisions -->
+    <div class="forecast-card">
+      <div class="card-header">
+        <h2>Prévisions à 5 jours</h2>
+      </div>
+      
+      <div class="forecast-loading" *ngIf="forecastLoading">
+        <mat-spinner [diameter]="40"></mat-spinner>
+        <p>Chargement des prévisions...</p>
+      </div>
+      
+      <div *ngIf="forecast && !forecastLoading" class="forecast-days">
+        <div class="forecast-day" *ngFor="let day of forecast.daily.slice(0, 5)">
+          <div class="day-name">{{ day.date | date:'EEE d' }}</div>
+          <div class="weather-icon">
+            <img *ngIf="day.weather.icon" [src]="getWeatherIconUrl(day.weather.icon)" alt="Weather icon">
+            <mat-icon *ngIf="!day.weather.icon" [ngClass]="getWeatherClass(day.weather.main)">
+              {{ getWeatherIcon(day.weather.icon || '01d') }}
+            </mat-icon>
+          </div>
+          <div class="temp-range">
+            <span class="max-temp">{{ day.temperature.max | number:'1.0-0' }}°</span>
+            <span class="temp-separator">/</span>
+            <span class="min-temp">{{ day.temperature.min | number:'1.0-0' }}°</span>
+          </div>
+          <div class="weather-condition">{{ day.weather.description }}</div>
+        </div>
+      </div>
+      
+      <div class="forecast-cta" *ngIf="!forecast && !forecastLoading">
+        <button (click)="loadForecast()">Voir les prévisions à 5 jours</button>
+      </div>
+    </div>
+    
+    <!-- Carte des données agricoles -->
+    <div class="agriculture-card">
+      <div class="card-header">
+        <h2>
+          <mat-icon>grass</mat-icon>
+          Données agricoles
+        </h2>
+      </div>
+      
+      <div class="agriculture-content">
+        <div class="agriculture-metrics">
+          <div class="metric-row">
+            <div class="metric-icon soil">
+              <mat-icon>terrain</mat-icon>
+            </div>
+            <div class="metric-content">
+              <h4 class="metric-name">Humidité du sol</h4>
+              <div class="metric-value-wrapper">
+                <div class="metric-value" [ngClass]="getMoistureClass(agricultureData.soilMoisture || 0)">
+                  {{ agricultureData.soilMoisture | number:'1.0-0' }}%
+                </div>
+                <div class="metric-status">{{ getMoistureStatus(agricultureData.soilMoisture || 0) }}</div>
+              </div>
+              <div class="metric-progress">
+                <div class="progress-fill moisture-level" 
+                  [ngClass]="getMoistureClass(agricultureData.soilMoisture || 0)"
+                  [style.width.%]="agricultureData.soilMoisture || 0"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="metric-row">
+            <div class="metric-icon uv">
+              <mat-icon>wb_sunny</mat-icon>
+            </div>
+            <div class="metric-content">
+              <h4 class="metric-name">Indice UV</h4>
+              <div class="metric-value-wrapper">
+                <div class="metric-value" [ngClass]="getUVClass(agricultureData.uvIndex)">
+                  {{ (agricultureData.uvIndex || 0) | number:'1.0-1' }}
+                </div>
+              </div>
+              <div class="metric-progress">
+                <div class="progress-fill uv-level" 
+                  [style.width.%]="(agricultureData.uvIndex || 0) * 10"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="metric-row">
+            <div class="metric-icon gdd">
+              <mat-icon>eco</mat-icon>
+            </div>
+            <div class="metric-content">
+              <h4 class="metric-name">Degrés-jours de croissance</h4>
+              <div class="metric-value-wrapper">
+                <div class="metric-value">
+                  {{ agricultureData.growingDegreeDays | number:'1.0-0' }}
+                </div>
+              </div>
+              <div class="metric-progress">
+                <div class="progress-fill gdd-level" 
+                  [style.width.%]="((agricultureData.growingDegreeDays || 0) / 20) > 100 ? 100 : ((agricultureData.growingDegreeDays || 0) / 20)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="recommendations">
+          <h3>Recommandations</h3>
+          <ul>
+            <li *ngFor="let rec of agricultureData.recommendations">
+              <mat-icon class="recommendation-icon">assignment_turned_in</mat-icon>
+              <span class="recommendation-text">{{ rec }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Pied de page -->
+</div>

@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="header-actions">
+    <h1 *ngIf="farmer">Parcelles de {{ farmer.prenom }} {{ farmer.nom }}</h1>
+    <h1 *ngIf="!farmer">Liste des Parcelles</h1>
+    
+    <div class="action-buttons">
+      <button [routerLink]="['/farmers', farmerId]" class="btn btn-secondary">Retour au profil</button>
+      <button [routerLink]="['/farmers', farmerId, 'parcelles', 'new']" class="btn btn-primary">Ajouter une parcelle</button>
+    </div>
+  </div>
+  
+  <div *ngIf="loading" class="loading">
+    Chargement des parcelles...
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && !error">
+    <div *ngIf="parcelles.length === 0" class="no-data">
+      Aucune parcelle enregistrée pour cet agriculteur. Commencez par en ajouter une !
+    </div>
+    
+    <div *ngIf="parcelles.length > 0" class="parcelles-grid">
+      <div *ngFor="let parcelle of parcelles" class="parcelle-card">
+        <div class="parcelle-header">
+          <h3>{{ parcelle.nom }}</h3>
+          <span class="badge">{{ parcelle.superficie }} ha</span>
+        </div>
+        
+        <div class="parcelle-body">
+          <div class="info-row">
+            <span class="label">Culture:</span>
+            <span class="value">{{ parcelle.culture }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Type de sol:</span>
+            <span class="value">{{ parcelle.typeSol }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Plantation:</span>
+            <span class="value">{{ parcelle.datePlantation | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Récolte estimée:</span>
+            <span class="value">{{ parcelle.dateRecolteEstimee | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Irrigation:</span>
+            <span class="value">{{ parcelle.irrigation ? 'Oui' : 'Non' }}</span>
+          </div>
+        </div>
+        
+        <div class="parcelle-actions">
+          <button [routerLink]="['/farmers', farmerId, 'parcelles', parcelle.id]" class="btn btn-info">
+            Détails
+          </button>
+          <button (click)="deleteParcelle(parcelle.id)" class="btn btn-danger">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

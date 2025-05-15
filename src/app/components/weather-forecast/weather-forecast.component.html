@@ -1,0 +1,38 @@
+<div class="weather-forecast-chip" [ngClass]="{'dark-theme': darkMode}">
+  <div class="weather-chip-content">
+    <div class="location-badge" *ngIf="!loading && !error && forecast">
+      <div class="location-with-flag">
+        <img 
+          [src]="getFlagUrl('flat', 24)" 
+          alt="Drapeau du pays" 
+          class="country-flag"
+          [ngClass]="{'loading': loadingFlag}" 
+          (load)="loadingFlag = false"
+          (error)="loadingFlag = false"
+        />
+        <span class="location-name">{{ forecast.location }}</span>
+      </div>
+    </div>
+    
+    <div class="location-badge placeholder" *ngIf="!forecast || loading">
+      <mat-icon>location_searching</mat-icon>
+      <span class="location-placeholder">Localisation...</span>
+    </div>
+    
+    <div class="weather-info" *ngIf="forecast">
+      <div class="weather-icon-wrapper">
+        <mat-icon class="weather-icon" [ngClass]="getWeatherClass(forecast.current.weather)">
+          {{ getWeatherIcon(forecast.current.icon) }}
+        </mat-icon>
+      </div>
+      <div class="temp-info">
+        <div class="temp-display">{{ forecast.current.temperature | number:'1.0-0' }}°</div>
+        <div class="weather-label">{{ forecast.current.weather }}</div>
+      </div>
+    </div>
+    
+    <button mat-icon-button class="details-button" [routerLink]="['/city-weather']" matTooltip="Voir les prévisions détaillées">
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </button>
+  </div>
+</div>

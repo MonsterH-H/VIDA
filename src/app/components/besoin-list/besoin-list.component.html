@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="header-actions">
+    <h1 *ngIf="farmer">Besoins de {{ farmer.prenom }} {{ farmer.nom }}</h1>
+    <h1 *ngIf="!farmer">Liste des Besoins</h1>
+    
+    <div class="action-buttons">
+      <button [routerLink]="['/farmers', farmerId]" class="btn btn-secondary">Retour au profil</button>
+      <button [routerLink]="['/farmers', farmerId, 'besoins', 'new']" class="btn btn-primary">Ajouter un besoin</button>
+    </div>
+  </div>
+  
+  <div *ngIf="loading" class="loading">
+    Chargement des besoins...
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && !error">
+    <div *ngIf="besoins.length === 0" class="no-data">
+      Aucun besoin enregistré pour cet agriculteur. Commencez par en ajouter un !
+    </div>
+    
+    <div *ngIf="besoins.length > 0" class="besoins-grid">
+      <div *ngFor="let besoin of besoins" class="besoin-card">
+        <div class="besoin-header">
+          <h3>{{ getTypeBesoinLabel(besoin.type) }}</h3>
+          <div class="badges">
+            <span class="badge" [ngClass]="getPrioriteClass(besoin.priorite)">{{ besoin.priorite }}</span>
+            <span class="badge" [ngClass]="getStatutClass(besoin.statut)">{{ besoin.statut }}</span>
+          </div>
+        </div>
+        
+        <div class="besoin-body">
+          <p class="description">{{ besoin.description }}</p>
+          <div class="info-row">
+            <span class="label">Date de création:</span>
+            <span class="value">{{ besoin.dateCreation | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div *ngIf="besoin.parcelleId" class="info-row">
+            <span class="label">Parcelle concernée:</span>
+            <span class="value">
+              <a [routerLink]="['/farmers', farmerId, 'parcelles', besoin.parcelleId]">
+                {{ getParcelleName(besoin.parcelleId) }}
+              </a>
+            </span>
+          </div>
+          <div *ngIf="besoin.alerteMeteo" class="info-row">
+            <span class="label">Alerte météo:</span>
+            <span class="value alert-badge">Oui</span>
+          </div>
+        </div>
+        
+        <div class="besoin-actions">
+          <button [routerLink]="['/farmers', farmerId, 'besoins', besoin.id]" class="btn btn-info">
+            Détails
+          </button>
+          <button (click)="deleteBesoin(besoin.id)" class="btn btn-danger">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

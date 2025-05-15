@@ -1,0 +1,217 @@
+<div class="container">
+  <div *ngIf="loading" class="loading">
+    Chargement des informations de l'agriculteur...
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && !error && farmer">
+    <div class="header-actions">
+      <h1 *ngIf="!isNewFarmer">{{ farmer.prenom }} {{ farmer.nom }}</h1>
+      <h1 *ngIf="isNewFarmer">Nouvel Agriculteur</h1>
+      
+      <div *ngIf="!isEditing && !isNewFarmer" class="action-buttons">
+        <button (click)="toggleEdit()" class="btn btn-primary">Modifier</button>
+        <button [routerLink]="['/farmers']" class="btn btn-secondary">Retour à la liste</button>
+      </div>
+    </div>
+    
+    <div *ngIf="isEditing" class="form-card">
+      <h2>{{ isNewFarmer ? 'Nouvel agriculteur' : 'Modifier les informations' }}</h2>
+      
+      <form #farmerFormEl="ngForm">
+        <div class="form-group">
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" name="nom" [(ngModel)]="farmer.nom" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" name="prenom" [(ngModel)]="farmer.prenom" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" [(ngModel)]="farmer.email" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="telephone">Téléphone</label>
+          <input type="tel" id="telephone" name="telephone" [(ngModel)]="farmer.telephone" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="adresse">Adresse</label>
+          <input type="text" id="adresse" name="adresse" [(ngModel)]="farmer.adresse" class="form-control" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="codePostal">Code postal</label>
+            <input type="text" id="codePostal" name="codePostal" [(ngModel)]="farmer.codePostal" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="ville">Ville</label>
+            <input type="text" id="ville" name="ville" [(ngModel)]="farmer.ville" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="pays">Pays</label>
+            <input type="text" id="pays" name="pays" [(ngModel)]="farmer.pays" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button (click)="saveFarmer(farmerFormEl)" class="btn btn-success">Enregistrer</button>
+          <button (click)="cancelEdit()" class="btn btn-danger">Annuler</button>
+        </div>
+      </form>
+    </div>
+    
+    <div *ngIf="!isEditing" class="farmer-details">
+      <div class="farmer-info-card">
+        <h3>Informations personnelles</h3>
+        <div class="info-row">
+          <span class="label">Email:</span>
+          <span class="value">{{ farmer.email }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Téléphone:</span>
+          <span class="value">{{ farmer.telephone }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Adresse:</span>
+          <span class="value">{{ farmer.adresse }}, {{ farmer.codePostal }} {{ farmer.ville }}, {{ farmer.pays }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date d'inscription:</span>
+          <span class="value">{{ farmer.dateInscription | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+      
+      <div *ngIf="weatherData" class="weather-card">
+        <h3>Conditions météorologiques actuelles</h3>
+        <div class="weather-main">
+          <div class="temperature">{{ weatherData.temperature | number:'1.0-0' }}°C</div>
+          <div class="location">{{ weatherData.location }}</div>
+        </div>
+        <div class="weather-details">
+          <div class="detail-item">
+            <span class="label">Humidité:</span>
+            <span class="value">{{ weatherData.humidity }}%</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Vent:</span>
+            <span class="value">{{ weatherData.windSpeed }} km/h</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Précipitations:</span>
+            <span class="value">{{ weatherData.precipitation }} mm</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Humidité du sol:</span>
+            <span class="value">{{ weatherData.soilMoisture }}%</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Indice UV:</span>
+            <span class="value">{{ weatherData.uvIndex }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Degrés-jours de croissance:</span>
+            <span class="value">{{ weatherData.growingDegreeDays }}</span>
+          </div>
+        </div>
+        
+        <div *ngIf="weatherData.recommendations && weatherData.recommendations.length > 0" class="recommendations">
+          <h4>Recommandations:</h4>
+          <ul>
+            <li *ngFor="let rec of weatherData.recommendations">{{ rec }}</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="parcelles-section">
+        <div class="section-header">
+          <h3>Parcelles ({{ farmer.parcelles.length }})</h3>
+          <button [routerLink]="['/farmers', farmer.id, 'parcelles']" class="btn btn-primary">Gérer les parcelles</button>
+        </div>
+        
+        <div *ngIf="farmer.parcelles.length === 0" class="no-data">
+          Aucune parcelle enregistrée pour cet agriculteur.
+        </div>
+        
+        <div *ngIf="farmer.parcelles.length > 0" class="parcelles-list">
+          <div *ngFor="let parcelle of farmer.parcelles" class="parcelle-item">
+            <div class="parcelle-info">
+              <h4>{{ parcelle.nom }}</h4>
+              <p>Culture: {{ parcelle.culture }}</p>
+              <p>Superficie: {{ parcelle.superficie }} ha</p>
+              <p>Plantation: {{ parcelle.datePlantation | date:'dd/MM/yyyy' }}</p>
+            </div>
+            <div class="parcelle-actions">
+              <button [routerLink]="['/farmers', farmer.id, 'parcelles', parcelle.id]" class="btn btn-info">Détails</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="besoins-section">
+        <div class="section-header">
+          <h3>Besoins ({{ farmer.besoins.length }})</h3>
+          <button [routerLink]="['/farmers', farmer.id, 'besoins']" class="btn btn-primary">Gérer les besoins</button>
+        </div>
+        
+        <div *ngIf="farmer.besoins.length === 0" class="no-data">
+          Aucun besoin enregistré pour cet agriculteur.
+        </div>
+        
+        <div *ngIf="farmer.besoins.length > 0" class="besoins-list">
+          <div *ngFor="let besoin of farmer.besoins" class="besoin-item">
+            <div class="besoin-info">
+              <h4>{{ besoin.type }}</h4>
+              <p>{{ besoin.description }}</p>
+              <p>Priorité: <span [ngClass]="'priority-' + besoin.priorite">{{ besoin.priorite }}</span></p>
+              <p>Statut: <span [ngClass]="'status-' + besoin.statut">{{ besoin.statut }}</span></p>
+            </div>
+            <div class="besoin-actions">
+              <button [routerLink]="['/farmers', farmer.id, 'besoins', besoin.id]" class="btn btn-info">Détails</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="preferences-section">
+        <h3>Préférences</h3>
+        <div class="preferences-form">
+          <div class="form-group">
+            <label>
+              <input type="checkbox" [(ngModel)]="farmer.preferences.alertesMeteo" (change)="updatePreferences()">
+              Recevoir des alertes météo
+            </label>
+          </div>
+          
+          <div class="form-group">
+            <label for="frequenceNotifications">Fréquence des notifications</label>
+            <select id="frequenceNotifications" [(ngModel)]="farmer.preferences.frequenceNotifications" (change)="updatePreferences()" class="form-control">
+              <option value="quotidienne">Quotidienne</option>
+              <option value="hebdomadaire">Hebdomadaire</option>
+              <option value="mensuelle">Mensuelle</option>
+              <option value="aucune">Aucune</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="uniteTemperature">Unité de température</label>
+            <select id="uniteTemperature" [(ngModel)]="farmer.preferences.uniteTemperature" (change)="updatePreferences()" class="form-control">
+              <option value="celsius">Celsius (°C)</option>
+              <option value="fahrenheit">Fahrenheit (°F)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

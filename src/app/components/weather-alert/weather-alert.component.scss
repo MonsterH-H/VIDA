@@ -1,0 +1,6 @@
+// Styles pour WeatherAlertComponent
+@use 'src/app/styles/variables' as *;
+
+:host {
+  display: block;
+}

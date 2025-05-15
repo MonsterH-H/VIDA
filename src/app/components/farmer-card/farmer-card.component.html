@@ -1,0 +1,92 @@
+<div class="farmer-card" [ngClass]="{'dark-theme': darkMode}">
+  <div class="card-header">
+    <div class="farmer-identity">
+      <div class="avatar" *ngIf="farmer.nom && farmer.prenom">
+        {{ farmer.prenom[0] }}{{ farmer.nom[0] }}
+      </div>
+      <div class="farmer-info">
+        <h3>{{ farmer.prenom }} {{ farmer.nom }}</h3>
+        <p class="farmer-location">
+          <mat-icon>location_on</mat-icon>
+          {{ farmer.ville }}, {{ farmer.pays }}
+        </p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button class="more-menu" [matMenuTriggerFor]="menu" aria-label="Plus d'options">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onEdit()">
+          <mat-icon>edit</mat-icon>
+          <span>Modifier</span>
+        </button>
+        <button mat-menu-item (click)="onDelete()">
+          <mat-icon>delete</mat-icon>
+          <span>Supprimer</span>
+        </button>
+        <div class="menu-divider"></div>
+        <button mat-menu-item (click)="viewParcelles()">
+          <mat-icon>grid_view</mat-icon>
+          <span>Voir les parcelles</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+  
+  <div class="card-content">
+    <div class="contact-info">
+      <div class="info-item" *ngIf="farmer.email">
+        <mat-icon>email</mat-icon>
+        <span>{{ farmer.email }}</span>
+      </div>
+      <div class="info-item" *ngIf="farmer.telephone">
+        <mat-icon>phone</mat-icon>
+        <span>{{ farmer.telephone }}</span>
+      </div>
+      <div class="info-item" *ngIf="farmer.adresse">
+        <mat-icon>home</mat-icon>
+        <span>{{ farmer.adresse }}, {{ farmer.codePostal }}</span>
+      </div>
+      <div class="info-item date-item">
+        <mat-icon>event</mat-icon>
+        <span>Inscrit depuis {{ formatDate(farmer.dateInscription) }}</span>
+      </div>
+    </div>
+    
+    <div class="data-metrics">
+      <div class="metric">
+        <div class="metric-value">{{ farmer.parcelles?.length || 0 }}</div>
+        <div class="metric-label">Parcelles</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">{{ farmer.besoins?.length || 0 }}</div>
+        <div class="metric-label">Besoins</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" [ngClass]="getPriorityClass(farmer)">
+          {{ getPriorityLabel(farmer) }}
+        </div>
+        <div class="metric-label">Priorité</div>
+      </div>
+    </div>
+    
+    <div class="tags-section" *ngIf="farmer.preferences?.culturesPreferees?.length">
+      <h4>Cultures préférées</h4>
+      <div class="tags">
+        <span class="tag" *ngFor="let culture of farmer.preferences.culturesPreferees">{{ culture }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card-footer">
+    <button mat-button color="primary" (click)="viewDetails()">
+      <mat-icon>visibility</mat-icon>
+      Voir le détail
+    </button>
+    <button mat-button class="weather-btn" (click)="viewWeather()">
+      <mat-icon>thermostat</mat-icon>
+      Météo locale
+    </button>
+  </div>
+</div> 

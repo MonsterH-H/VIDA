@@ -1,0 +1,254 @@
+<div class="agricultural-dashboard" [ngClass]="{'dark-theme': darkMode}">
+  <!-- En-tête du tableau de bord -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Tableau de Bord Agricole</h1>
+      <p class="subtitle">Suivi et analyse des cultures</p>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button [matMenuTriggerFor]="filterMenu" class="filter-btn">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+      <mat-menu #filterMenu="matMenu">
+        <button mat-menu-item>
+          <mat-icon>agriculture</mat-icon>
+          <span>Filtrer par culture</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>calendar_today</mat-icon>
+          <span>Filtrer par période</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>location_on</mat-icon>
+          <span>Filtrer par parcelle</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- Indicateurs clés -->
+  <div class="key-indicators">
+    <mat-card class="indicator-card">
+      <div class="indicator-content">
+        <div class="indicator-icon growth">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="indicator-info">
+          <h3>Indice de Croissance</h3>
+          <p class="indicator-value">85%</p>
+          <p class="indicator-label">vs objectif</p>
+        </div>
+      </div>
+      <mat-progress-bar mode="determinate" value="85" color="primary"></mat-progress-bar>
+    </mat-card>
+
+    <mat-card class="indicator-card">
+      <div class="indicator-content">
+        <div class="indicator-icon health">
+          <mat-icon>favorite</mat-icon>
+        </div>
+        <div class="indicator-info">
+          <h3>Santé des Cultures</h3>
+          <p class="indicator-value">92%</p>
+          <p class="indicator-label">bonne santé</p>
+        </div>
+      </div>
+      <mat-progress-bar mode="determinate" value="92" color="accent"></mat-progress-bar>
+    </mat-card>
+
+    <mat-card class="indicator-card">
+      <div class="indicator-content">
+        <div class="indicator-icon yield">
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+        <div class="indicator-info">
+          <h3>Prévision de Rendement</h3>
+          <p class="indicator-value">+12%</p>
+          <p class="indicator-label">vs année précédente</p>
+        </div>
+      </div>
+      <mat-progress-bar mode="determinate" value="75" color="warn"></mat-progress-bar>
+    </mat-card>
+  </div>
+
+  <!-- Graphiques et données -->
+  <mat-tab-group class="dashboard-tabs">
+    <mat-tab label="Croissance">
+      <div class="tab-content">
+        <div class="chart-container">
+          <ngx-charts-line-chart
+            [results]="growthData"
+            [gradient]="true"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            xAxisLabel="Jours"
+            yAxisLabel="Croissance"
+            [autoScale]="true">
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Degrés-Jours">
+      <div class="tab-content">
+        <div class="chart-container">
+          <ngx-charts-bar-vertical
+            [results]="degreeDaysData"
+            [gradient]="true"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            xAxisLabel="Semaines"
+            yAxisLabel="Degrés-Jours">
+          </ngx-charts-bar-vertical>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Rendements">
+      <div class="tab-content">
+        <div class="chart-container">
+          <ngx-charts-pie-chart
+            [results]="yieldData"
+            [gradient]="true"
+            [legend]="true"
+            [labels]="true">
+          </ngx-charts-pie-chart>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Formulaire de saisie des cultures -->
+  <mat-dialog-content *ngIf="isEditing" class="crop-form">
+    <form [formGroup]="cropForm" (ngSubmit)="saveCrop()">
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom de la culture</mat-label>
+          <input matInput formControlName="name" placeholder="Ex: Blé d'hiver">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Emplacement</mat-label>
+          <input matInput formControlName="location" placeholder="Ex: Parcelle A1">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Phase de culture</mat-label>
+          <mat-select formControlName="phase">
+            <mat-option *ngFor="let phase of phases" [value]="phase">
+              {{phase}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Âge</mat-label>
+          <input matInput formControlName="age" placeholder="Ex: 45 jours">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Surface</mat-label>
+          <input matInput formControlName="area" placeholder="Ex: 2.5 ha">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Croissance (%)</mat-label>
+          <input matInput type="number" formControlName="growth" min="0" max="100">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Santé (%)</mat-label>
+          <input matInput type="number" formControlName="health" min="0" max="100">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rendement (t/ha)</mat-label>
+          <input matInput type="number" formControlName="yield" min="0">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Progression (%)</mat-label>
+          <input matInput type="number" formControlName="progress" min="0" max="100">
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="isEditing = false">Annuler</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!cropForm.valid">
+          {{ selectedCrop ? 'Mettre à jour' : 'Ajouter' }}
+        </button>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <!-- Bouton d'ajout de culture -->
+  <div class="add-crop-button">
+    <button mat-raised-button color="primary" (click)="addCrop()">
+      <mat-icon>add</mat-icon>
+      Ajouter une culture
+    </button>
+  </div>
+
+  <!-- Liste des cultures -->
+  <div class="crops-list">
+    <mat-card class="crop-card" *ngFor="let crop of crops">
+      <div class="crop-header">
+        <div class="crop-icon">
+          <mat-icon>{{getCropIcon(crop.name)}}</mat-icon>
+        </div>
+        <div class="crop-title">
+          <h3>{{crop.name}}</h3>
+          <p class="crop-location">{{crop.location}}</p>
+        </div>
+        <div class="crop-status" [ngClass]="crop.status">
+          {{crop.status}}
+        </div>
+      </div>
+      <div class="crop-content">
+        <div class="crop-metrics">
+          <div class="metric">
+            <span class="metric-label">Phase</span>
+            <span class="metric-value">{{crop.phase}}</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Âge</span>
+            <span class="metric-value">{{crop.age}}</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Surface</span>
+            <span class="metric-value">{{crop.area}}</span>
+          </div>
+        </div>
+        <div class="crop-progress">
+          <div class="progress-info">
+            <span>Progression</span>
+            <span>{{crop.progress}}%</span>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="crop.progress" color="primary"></mat-progress-bar>
+        </div>
+      </div>
+      <div class="crop-footer">
+        <div class="crop-actions">
+          <button mat-button color="primary" (click)="editCrop(crop)">
+            <mat-icon>edit</mat-icon>
+            <span>Modifier</span>
+          </button>
+          <button mat-button color="warn" (click)="deleteCrop(crop)">
+            <mat-icon>delete</mat-icon>
+            <span>Supprimer</span>
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div> 

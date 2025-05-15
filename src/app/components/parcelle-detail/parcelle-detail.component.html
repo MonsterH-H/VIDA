@@ -1,0 +1,160 @@
+<div class="container">
+  <div class="header-actions">
+    <h1 *ngIf="farmer && parcelle && !isNewParcelle">Parcelle: {{ parcelle.nom }}</h1>
+    <h1 *ngIf="farmer && isNewParcelle">Nouvelle Parcelle</h1>
+    
+    <div *ngIf="!isEditing && !isNewParcelle" class="action-buttons">
+      <button (click)="toggleEdit()" class="btn btn-primary">Modifier</button>
+      <button [routerLink]="['/farmers', farmerId, 'parcelles']" class="btn btn-secondary">Retour aux parcelles</button>
+    </div>
+  </div>
+  
+  <div *ngIf="loading" class="loading">
+    Chargement des informations de la parcelle...
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && !error && parcelle">
+    <div *ngIf="isEditing" class="parcelle-form">
+      <form #parcelleFormEl="ngForm">
+        <div class="form-group">
+          <label for="nom">Nom de la parcelle</label>
+          <input type="text" id="nom" name="nom" [(ngModel)]="parcelle.nom" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="superficie">Superficie (hectares)</label>
+          <input type="number" id="superficie" name="superficie" [(ngModel)]="parcelle.superficie" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="culture">Culture actuelle</label>
+          <input type="text" id="culture" name="culture" [(ngModel)]="parcelle.culture" class="form-control" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="datePlantation">Date de plantation</label>
+            <input type="date" id="datePlantation" name="datePlantation" [ngModel]="parcelle.datePlantation | date:'yyyy-MM-dd'" (ngModelChange)="parcelle.datePlantation = $event" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="dateRecolteEstimee">Date de récolte estimée</label>
+            <input type="date" id="dateRecolteEstimee" name="dateRecolteEstimee" [ngModel]="parcelle.dateRecolteEstimee | date:'yyyy-MM-dd'" (ngModelChange)="parcelle.dateRecolteEstimee = $event" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="latitude">Latitude</label>
+            <input type="number" id="latitude" name="latitude" [(ngModel)]="parcelle.coordonnees.latitude" class="form-control" required step="0.000001">
+          </div>
+          
+          <div class="form-group">
+            <label for="longitude">Longitude</label>
+            <input type="number" id="longitude" name="longitude" [(ngModel)]="parcelle.coordonnees.longitude" class="form-control" required step="0.000001">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="typeSol">Type de sol</label>
+          <input type="text" id="typeSol" name="typeSol" [(ngModel)]="parcelle.typeSol" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label>
+            <input type="checkbox" name="irrigation" [(ngModel)]="parcelle.irrigation">
+            Système d'irrigation installé
+          </label>
+        </div>
+        
+        <div class="form-group">
+          <label for="historiqueCultures">Historique des cultures (séparées par des virgules)</label>
+          <input type="text" id="historiqueCultures" name="historiqueCultures" [ngModel]="parcelle.historiqueCultures?.join(', ')" class="form-control">
+        </div>
+        
+        <div class="form-actions">
+          <button (click)="saveParcelle(parcelleFormEl)" class="btn btn-success">Enregistrer</button>
+          <button (click)="cancelEdit()" class="btn btn-danger">Annuler</button>
+        </div>
+      </form>
+    </div>
+    
+    <div *ngIf="!isEditing" class="parcelle-details">
+      <div class="parcelle-info-card">
+        <h3>Informations de la parcelle</h3>
+        <div class="info-row">
+          <span class="label">Superficie:</span>
+          <span class="value">{{ parcelle.superficie }} hectares</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Culture actuelle:</span>
+          <span class="value">{{ parcelle.culture }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Type de sol:</span>
+          <span class="value">{{ parcelle.typeSol }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date de plantation:</span>
+          <span class="value">{{ parcelle.datePlantation | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date de récolte estimée:</span>
+          <span class="value">{{ parcelle.dateRecolteEstimee | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Irrigation:</span>
+          <span class="value">{{ parcelle.irrigation ? 'Oui' : 'Non' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Coordonnées GPS:</span>
+          <span class="value">{{ parcelle.coordonnees.latitude }}, {{ parcelle.coordonnees.longitude }}</span>
+        </div>
+      </div>
+      
+      <div *ngIf="parcelle.historiqueCultures && parcelle.historiqueCultures.length > 0" class="historique-card">
+        <h3>Historique des cultures</h3>
+        <ul class="historique-list">
+          <li *ngFor="let culture of parcelle.historiqueCultures">{{ culture }}</li>
+        </ul>
+      </div>
+      
+      <div *ngIf="weatherData" class="weather-card">
+        <h3>Conditions météorologiques actuelles</h3>
+        <div class="weather-main">
+          <div class="temperature">{{ weatherData.temperature | number:'1.0-0' }}°C</div>
+          <div class="location">{{ weatherData.location }}</div>
+        </div>
+        <div class="weather-details">
+          <div class="detail-item">
+            <span class="label">Humidité:</span>
+            <span class="value">{{ weatherData.humidity }}%</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Vent:</span>
+            <span class="value">{{ weatherData.windSpeed }} km/h</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Précipitations:</span>
+            <span class="value">{{ weatherData.precipitation }} mm</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Humidité du sol:</span>
+            <span class="value">{{ weatherData.soilMoisture }}%</span>
+          </div>
+        </div>
+        
+        <div *ngIf="weatherData.recommendations && weatherData.recommendations.length > 0" class="recommendations">
+          <h4>Recommandations pour cette parcelle:</h4>
+          <ul>
+            <li *ngFor="let rec of weatherData.recommendations">{{ rec }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

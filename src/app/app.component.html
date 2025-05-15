@@ -1,0 +1,35 @@
+<div class="app-container" [ngClass]="{'dark-theme': darkMode}">
+  <app-header></app-header>
+
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <p>
+        &copy; 2025 <strong>VIDA</strong> — Plateforme intelligente de gestion météorologique pour les agriculteurs.
+      </p>
+  
+      <div class="footer-contact">
+        <p><strong>Développée par :</strong> 
+          Peme Handy Christ</p>
+        <p>
+          <strong>Email :</strong>
+          <a href="mailto:christpeme2a@gmail.com" title="Envoyer un mail à Christ">christpeme2&#64;gmail.com</a>
+
+        </p>
+        <p>
+          <strong>Téléphone :</strong>
+          <a href="tel:+212603548914" title="Appeler Peme Handy Christ">+212 6 03 54 29 14</a>
+        </p>
+      </div>
+  
+      <div class="footer-links">
+        <a href="#" title="Mentions légales">Mentions légales</a>
+        <a href="#" title="Politique de confidentialité">Politique de confidentialité</a>
+        <a href="#" title="Conditions d'utilisation">Conditions d'utilisation</a>
+      </div>
+    </div>
+  </footer>
+</div>

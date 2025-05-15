@@ -1,0 +1,128 @@
+<div class="weather-container">
+  <mat-card class="weather-card">
+    <mat-card-header class="card-header">
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">calendar_today</mat-icon>
+        <span>Historique Météo</span>
+      </mat-card-title>
+      <mat-card-subtitle class="card-subtitle">
+        Consultez les données météorologiques historiques
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="card-content">
+      <form [formGroup]="weatherForm" (ngSubmit)="getWeather()" class="weather-form">
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="city-field">
+            <mat-label>Ville</mat-label>
+            <input matInput formControlName="city" required placeholder="Ex: Paris, FR">
+            <mat-icon matPrefix>location_on</mat-icon>
+            <mat-error *ngIf="weatherForm.get('city')?.hasError('required')">
+              Veuillez saisir une ville
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date" required>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-icon matPrefix>event</mat-icon>
+            <mat-error *ngIf="weatherForm.get('date')?.hasError('required')">
+              Veuillez sélectionner une date
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button 
+                  color="primary" 
+                  type="submit" 
+                  class="action-button submit-button"
+                  [disabled]="loading">
+            <mat-icon class="button-icon">search</mat-icon>
+            <span>Rechercher</span>
+          </button>
+        </div>
+      </form>
+
+      <div *ngIf="weatherData" class="weather-result">
+        <div class="location-header">
+          <img *ngIf="weatherData.country" class="country-flag" 
+               [src]="'https://flagsapi.com/' + weatherData.country + '/flat/64.png'" 
+               [alt]="weatherData.country">
+          <div class="location-info">
+            <h2 class="city-name">{{ weatherData.city }}</h2>
+            <div class="location-meta">
+              <span class="country-name">{{ weatherData.country }}</span>
+              <span class="weather-date">{{ weatherData.date | date:'fullDate' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Onglets pour alterner entre tableau et graphiques -->
+        <mat-tab-group animationDuration="300ms" class="weather-tabs">
+          <mat-tab label="Tableau">
+            <div class="weather-table-container">
+              <table class="weather-table mat-elevation-z2">
+                <thead>
+                  <tr>
+                    <th class="time-column">Heure</th>
+                    <th class="temp-column">Température</th>
+                    <th class="humidity-column">Humidité</th>
+                    <th class="weather-column">Conditions</th>
+                    <th class="wind-column">Vent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let hour of weatherData.hourly">
+                    <td class="time-column">{{ hour.time | date:'HH:mm' }}</td>
+                    <td class="temp-column">{{ hour.temp }}°C</td>
+                    <td class="humidity-column">{{ hour.humidity }}%</td>
+                    <td class="weather-column">
+                      <div class="weather-condition">
+                        <img *ngIf="hour.weather_icon" 
+                            [src]="'https://openweathermap.org/img/wn/' + hour.weather_icon + '.png'"
+                            [alt]="getWeatherDescription(hour.weather_code)"
+                            class="weather-icon">
+                        <span class="weather-description">{{ getWeatherDescription(hour.weather_code) }}</span>
+                      </div>
+                    </td>
+                    <td class="wind-column">{{ hour.wind_speed }} km/h</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-tab>
+          
+          <mat-tab label="Graphiques">
+            <div class="charts-container">
+              <div class="chart-wrapper temperature-chart">
+                <canvas #temperatureChart></canvas>
+              </div>
+              
+              <div class="charts-grid">
+                <div class="chart-wrapper humidity-chart">
+                  <canvas #humidityChart></canvas>
+                </div>
+                
+                <div class="chart-wrapper wind-chart">
+                  <canvas #windChart></canvas>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+
+      <div *ngIf="loading && !weatherData" class="loading-overlay">
+        <mat-spinner diameter="50" color="accent"></mat-spinner>
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <span class="error-text">{{ error }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

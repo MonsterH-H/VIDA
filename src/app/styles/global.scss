@@ -1,0 +1,202 @@
+@use "sass:color";
+@use "./theme" as theme;
+
+// Styles globaux pour l'application
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  transition: var(--transition);
+}
+
+// Styles de mise en page adaptative
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+// Styles de carte adaptative
+.card {
+  @include theme.adaptive-card;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+// Styles pour les tableaux
+.table-container {
+  overflow-x: auto;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th, td {
+      padding: var(--spacing-md);
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    th {
+      color: var(--text-secondary);
+      font-weight: 500;
+      background-color: var(--background-secondary);
+    }
+    
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+}
+
+// Styles pour les boutons
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  
+  &.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    
+    &:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+  }
+  
+  &.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    
+    &:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+  }
+  
+  &.btn-danger {
+    $danger-color: #e74c3c;
+    $danger-color-dark: #c0392b; // Version pré-calculée de darken(#e74c3c, 10%)
+    
+    background-color: $danger-color;
+    color: white;
+    
+    &:hover {
+      background-color: $danger-color-dark;
+    }
+  }
+}
+
+// Adaptations de positionnement
+.flex-row {
+  display: flex;
+  gap: var(--spacing-md);
+  
+  &.space-between {
+    justify-content: space-between;
+  }
+  
+  &.center {
+    align-items: center;
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: var(--spacing-md);
+  
+  &.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  &.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+    
+    @media (max-width: 992px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Styles des badges adaptatifs
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  
+  &.badge-primary {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  &.badge-success {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  &.badge-warning {
+    background-color: #f59e0b;
+    color: white;
+  }
+}
+
+// Adaptations pour les formulaires
+.form-group {
+  margin-bottom: var(--spacing-lg);
+  
+  label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-secondary);
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: var(--spacing-md);
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+  }
+} 

@@ -1,0 +1,292 @@
+@use '@angular/material' as mat;
+@use 'sass:color';
+/* Variables CSS modernes */
+:root {
+  /* Couleurs de base */
+  --primary-hue: 231;
+  --primary-saturation: 48%;
+  --primary-lightness: 54%;
+  
+  /* Couleurs dérivées */
+  --primary: hsl(var(--primary-hue), var(--primary-saturation), var(--primary-lightness));
+  --primary-dark: hsl(var(--primary-hue), var(--primary-saturation), calc(var(--primary-lightness) - 10%));
+  --primary-light: hsl(var(--primary-hue), var(--primary-saturation), calc(var(--primary-lightness) + 10%));
+  
+  --accent: #ff4081;
+  --warn: #f44336;
+  
+  /* Arrière-plans */
+  --bg-container: #f5f7fa;
+  --card-bg: #ffffff;
+  
+  /* Texte */
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  
+  /* Surfaces */
+  --table-header-bg: #f5f5f5;
+  --table-row-hover: #f9f9f9;
+  
+  /* Effets */
+  --border-radius: 12px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+/* Mode sombre */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-lightness: 60%;
+    --primary-dark: hsl(var(--primary-hue), var(--primary-saturation), calc(var(--primary-lightness) - 15%));
+    
+    --bg-container: #121212;
+    --card-bg: #1e1e1e;
+    
+    --text-primary: #e0e0e0;
+    --text-secondary: #9e9e9e;
+    
+    --table-header-bg: #2d2d2d;
+    --table-row-hover: #2a2a2a;
+    
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+}
+/* Structure de base */
+.weather-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--bg-container);
+  min-height: 100vh;
+  transition: var(--transition);
+}
+/* Carte principale */
+.weather-card {
+  width: 100%;
+  max-width: 1200px;
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition);
+  /* En-tête de carte */
+  .card-header {
+    padding: 1.5rem 1.5rem 0.5rem;
+    background: linear-gradient(
+      135deg, 
+      var(--primary), 
+      var(--primary-dark)
+    );
+    color: white;
+    .card-title {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      .title-icon {
+        margin-right: 0.75rem;
+        font-size: 1.8rem;
+      }
+    }
+    .card-subtitle {
+      color: rgba(7, 6, 6, 0.9);
+      font-size: 0.9rem;
+    }
+  }
+  /* Contenu de carte */
+  .card-content {
+    padding: 1.5rem;
+  }
+}
+/* Formulaire */
+.weather-form {
+  margin-bottom: 1.5rem;
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* Bouton de soumission */
+  .submit-button {
+    width: 100%;
+    height: 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: var(--transition);
+    .button-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .search-icon {
+      margin-right: 0.5rem;
+    }
+    .button-spinner {
+      margin-left: 0.5rem;
+    }
+  }
+}
+/* Résultats météo */
+.weather-result {
+  margin-top: 2rem;
+  animation: fadeIn 0.4s ease-out;
+  .location-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    .country-flag {
+      width: 48px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .location-info {
+      flex: 1;
+      .city-name {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+      .location-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        .country-name {
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+/* Tableau des données */
+.weather-table-container {
+  overflow-x: auto;
+  margin-top: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.weather-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--card-bg);
+  thead {
+    background-color: var(--table-header-bg);
+    position: sticky;
+    top: 0;
+  }
+  th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  td {
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  tr:hover {
+    background-color: var(--table-row-hover);
+  }
+  /* Colonnes spécifiques */
+  .time-column { width: 15%; min-width: 100px; }
+  .temp-column { width: 15%; min-width: 100px; }
+  .humidity-column { width: 15%; min-width: 100px; }
+  .weather-column { width: 35%; min-width: 200px; }
+  .wind-column { width: 20%; min-width: 120px; }
+  .weather-condition {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+/* États */
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: rgba(var(--warn), 0.1);
+  color: var(--warn);
+  .error-icon {
+    color: var(--warn);
+  }
+}
+/* Animations */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Styles des onglets */
+.weather-tabs {
+  margin-top: 1.5rem;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+/* Conteneur de graphiques */
+.charts-container {
+  padding: 1.5rem;
+}
+
+.chart-wrapper {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
+  margin-bottom: 1.5rem;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.temperature-chart {
+  margin-bottom: 1.5rem;
+  height: 300px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+  
+  .humidity-chart, .wind-chart {
+    height: 250px;
+  }
+}

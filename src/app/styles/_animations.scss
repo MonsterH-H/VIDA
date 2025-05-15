@@ -1,0 +1,321 @@
+// Animations pour les éléments météorologiques
+@use 'variables' as *;
+
+// Animation de pluie
+@keyframes rain-drop {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  70% {
+    transform: translateY(25px) scale(0.9);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(30px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+// Animation de neige
+@keyframes snow-fall {
+  0% {
+    transform: translateY(0) rotate(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(15px) rotate(180deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(30px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+// Animation de soleil
+@keyframes sun-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.95;
+    box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.7);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+    box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+  }
+}
+
+// Animation de nuages
+@keyframes cloud-drift {
+  0% {
+    transform: translateX(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateX(5px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.9;
+  }
+}
+
+// Animation d'orage
+@keyframes lightning-flash {
+  0%, 50%, 100% {
+    opacity: 0;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+  }
+  52%, 55% {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.8));
+  }
+  56%, 65% {
+    opacity: 0;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+  }
+  66%, 69% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+  }
+  70%, 100% {
+    opacity: 0;
+  }
+}
+
+// Animation de brouillard
+@keyframes fog-pulse {
+  0% {
+    transform: scale(1) translateX(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.05) translateX(5px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1) translateX(0);
+    opacity: 0.4;
+  }
+}
+
+// Animation de transition jour-nuit
+@keyframes day-night-transition {
+  0%, 100% {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #0c1445 0%, #301860 100%);
+  }
+}
+
+// Animation pour les boutons d'action
+@keyframes button-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba($primary, 0.5);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba($primary, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba($primary, 0);
+  }
+}
+
+// Animation de chargement
+@keyframes loading-dot-pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+// Animation de navigation
+@keyframes page-transition-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-transition-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+// Animation pour le hover des cartes
+@keyframes card-hover {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+
+// Animation d'alerte
+@keyframes alert-pulse {
+  0%, 100% {
+    transform: scale(1);
+    background-color: rgba($accent-alert, 0.15);
+  }
+  50% {
+    transform: scale(1.03);
+    background-color: rgba($accent-alert, 0.25);
+  }
+}
+
+// Mixins d'animations pour faciliter leur application
+
+// Appliquer l'animation de pluie
+@mixin rain-animation {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: repeating-linear-gradient(to right,
+      transparent 0px,
+      transparent 8px,
+      rgba(100, 180, 255, 0.5) 8px,
+      rgba(100, 180, 255, 0.5) 9px
+    );
+    animation: rain-drop 1.5s infinite linear;
+    pointer-events: none;
+  }
+}
+
+// Appliquer l'animation de neige
+@mixin snow-animation {
+  position: relative;
+  overflow: hidden;
+  
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+      radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+      radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+      radial-gradient(circle at 90% 40%, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+    background-size: 150px 150px;
+    pointer-events: none;
+  }
+  
+  &::before {
+    animation: snow-fall 3s infinite linear;
+  }
+  
+  &::after {
+    animation: snow-fall 4s infinite linear;
+    animation-delay: 1.5s;
+  }
+}
+
+// Appliquer l'animation d'orage
+@mixin lightning-animation {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    animation: lightning-flash 5s infinite;
+  }
+}
+
+// Appliquer l'animation de brouillard
+@mixin fog-animation {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(45deg, 
+      rgba(255, 255, 255, 0.05) 0px, 
+      rgba(255, 255, 255, 0.05) 2px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(255, 255, 255, 0.1) 4px
+    );
+    animation: fog-pulse 3s infinite ease-in-out;
+    pointer-events: none;
+  }
+  
+  .dark-theme &::before {
+    background: repeating-linear-gradient(45deg, 
+      rgba(255, 255, 255, 0.03) 0px, 
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.06) 2px,
+      rgba(255, 255, 255, 0.06) 4px
+    );
+  }
+}
+
+// Animation de page
+@mixin page-transition {
+  animation: page-transition-in 0.4s ease-out forwards;
+}
+
+// Animation de bouton d'action
+@mixin pulse-button {
+  animation: button-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Animation d'alerte météo
+@mixin weather-alert {
+  animation: alert-pulse 2s infinite ease-in-out;
+}
+
+// Classes d'animation prêtes à l'emploi
+.animate-rain { @include rain-animation; }
+.animate-snow { @include snow-animation; }
+.animate-lightning { @include lightning-animation; }
+.animate-fog { @include fog-animation; }
+.animate-pulse { animation: button-pulse 2s infinite; }
+.animate-page { @include page-transition; }
+.animate-alert { @include weather-alert; } 

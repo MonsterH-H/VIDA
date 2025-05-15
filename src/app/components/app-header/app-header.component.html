@@ -1,0 +1,85 @@
+<mat-toolbar class="app-header">
+  <div class="container">
+    <!-- Logo à gauche -->
+    <div class="left-section">
+      <a routerLink="/" class="logo" matTooltip="Accueil">
+        <app-logo [darkMode]="darkMode"></app-logo>
+      </a>
+      <button mat-icon-button (click)="toggleDarkMode()" matTooltip="{{darkMode ? 'Mode clair' : 'Mode sombre'}}">
+        <mat-icon>{{darkMode ? 'light_mode' : 'dark_mode'}}</mat-icon>
+      </button>
+    </div>
+    
+    <!-- Navigation principale -->
+    <div class="middle-section">
+      <div class="nav-links">
+        <a mat-button routerLink="/dashboard" routerLinkActive="active" class="nav-link" matTooltip="Tableau de bord">
+          <mat-icon>dashboard</mat-icon>
+          <span>Tableau de bord</span>
+        </a>
+        <a mat-button routerLink="/city-weather" routerLinkActive="active" class="nav-link" matTooltip="Météo">
+          <mat-icon>thermostat</mat-icon>
+          <span>Météo</span>
+        </a>
+        <a mat-button routerLink="/farmers" routerLinkActive="active" class="nav-link" matTooltip="Agriculteurs">
+          <mat-icon>agriculture</mat-icon>
+          <span>Agriculteurs</span>
+        </a>
+        <a mat-button routerLink="/history" routerLinkActive="active" class="nav-link" matTooltip="Historique">
+          <mat-icon>history</mat-icon>
+          <span>Historique</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Actions rapides et paramètres -->
+    <div class="right-section">
+      <button mat-icon-button [matMenuTriggerFor]="quickActionsMenu" matTooltip="Actions rapides">
+        <mat-icon>bolt</mat-icon>
+      </button>
+      <mat-menu #quickActionsMenu="matMenu">
+        <button mat-menu-item (click)="createAlert()">
+          <mat-icon>add_alert</mat-icon>
+          <span>Créer une alerte</span>
+        </button>
+        <button mat-menu-item (click)="addEvent()">
+          <mat-icon>calendar_today</mat-icon>
+          <span>Ajouter un événement</span>
+        </button>
+      </mat-menu>
+
+      <button mat-icon-button [matBadge]="unreadNotifications" [matBadgeHidden]="unreadNotifications === 0"
+        matBadgeColor="warn" (click)="viewNotifications()" matTooltip="Notifications">
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="settingsMenu" matTooltip="Paramètres">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <mat-menu #settingsMenu="matMenu">
+        <a mat-menu-item routerLink="/settings">
+          <mat-icon>tune</mat-icon>
+          <span>Paramètres généraux</span>
+        </a>
+        <a mat-menu-item routerLink="/profile">
+          <mat-icon>account_circle</mat-icon>
+          <span>Mon profil</span>
+        </a>
+        <a mat-menu-item routerLink="/notifications">
+          <mat-icon>notifications</mat-icon>
+          <span>Notifications</span>
+        </a>
+        <div class="menu-divider"></div>
+        <a mat-menu-item routerLink="/support">
+          <mat-icon>support_agent</mat-icon>
+          <span>Support</span>
+        </a>
+
+        <a mat-menu-item routerLink="/about">
+          <mat-icon>info_outline</mat-icon>
+          <span>À propos</span>
+        </a>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>

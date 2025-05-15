@@ -1,0 +1,166 @@
+<div class="container">
+  <div class="header-actions">
+    <h1 *ngIf="farmer && besoin && !isNewBesoin">Besoin: {{ getTypeBesoinLabel(besoin.type) }}</h1>
+    <h1 *ngIf="farmer && isNewBesoin">Nouveau Besoin</h1>
+    
+    <div *ngIf="!isEditing && !isNewBesoin" class="action-buttons">
+      <button (click)="toggleEdit()" class="btn btn-primary">Modifier</button>
+      <button [routerLink]="['/farmers', farmerId, 'besoins']" class="btn btn-secondary">Retour aux besoins</button>
+    </div>
+  </div>
+  
+  <div *ngIf="loading" class="loading">
+    Chargement des informations du besoin...
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && !error && besoin">
+    <div *ngIf="isEditing" class="besoin-form">
+      <form #besoinFormEl="ngForm">
+        <div class="form-group">
+          <label for="type">Type de besoin</label>
+          <select id="type" [(ngModel)]="besoin.type" name="type" class="form-control" required>
+            <option *ngFor="let type of typesBesoins" [value]="type">{{ getTypeBesoinLabel(type) }}</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" [(ngModel)]="besoin.description" name="description" class="form-control" rows="4" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="priorite">Priorité</label>
+          <select id="priorite" [(ngModel)]="besoin.priorite" name="priorite" class="form-control" required>
+            <option value="faible">Faible</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="haute">Haute</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="statut">Statut</label>
+          <select id="statut" [(ngModel)]="besoin.statut" name="statut" class="form-control" required>
+            <option value="nouveau">Nouveau</option>
+            <option value="en_cours">En cours</option>
+            <option value="resolu">Résolu</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="parcelleId">Parcelle concernée (optionnel)</label>
+          <select id="parcelleId" [(ngModel)]="besoin.parcelleId" name="parcelleId" class="form-control">
+            <option [value]="undefined">Aucune parcelle spécifique</option>
+            <option *ngFor="let parcelle of parcelles" [value]="parcelle.id">{{ parcelle.nom }}</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="besoin.alerteMeteo" name="alerteMeteo">
+            Lié à une alerte météorologique
+          </label>
+        </div>
+        
+        <div class="form-actions">
+          <button (click)="saveBesoin(besoinFormEl)" class="btn btn-success">Enregistrer</button>
+          <button (click)="cancelEdit()" class="btn btn-danger">Annuler</button>
+        </div>
+      </form>
+    </div>
+   
+    <div *ngIf="!isEditing" class="besoin-details">
+      <div class="besoin-info-card">
+        <h3>Informations du besoin</h3>
+        <div class="info-row">
+          <span class="label">Type:</span>
+          <span class="value">{{ getTypeBesoinLabel(besoin.type) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Description:</span>
+          <span class="value">{{ besoin.description }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date de création:</span>
+          <span class="value">{{ besoin.dateCreation | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Priorité:</span>
+          <span class="value badge" [ngClass]="'priority-' + besoin.priorite">{{ besoin.priorite }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Statut:</span>
+          <span class="value badge" [ngClass]="'status-' + besoin.statut">{{ besoin.statut }}</span>
+        </div>
+        <div *ngIf="besoin.parcelleId" class="info-row">
+          <span class="label">Parcelle concernée:</span>
+          <span class="value">
+            <a [routerLink]="['/farmers', farmerId, 'parcelles', besoin.parcelleId]">
+              {{ getParcelleNom(besoin.parcelleId) }}
+            </a>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Alerte météo:</span>
+          <span class="value">{{ besoin.alerteMeteo ? 'Oui' : 'Non' }}</span>
+        </div>
+      </div>
+      
+      <div *ngIf="besoin.parcelleId" class="parcelle-link">
+        <h3>Parcelle associée</h3>
+        <button [routerLink]="['/farmers', farmerId, 'parcelles', besoin.parcelleId]" class="btn btn-info">
+          Voir les détails de la parcelle
+        </button>
+      </div>
+      
+      <div *ngIf="besoin.statut !== 'resolu'" class="actions-section">
+        <h3>Actions recommandées</h3>
+        <div [ngSwitch]="besoin.type">
+          <div *ngSwitchCase="'irrigation'">
+            <p>Recommandations pour l'irrigation :</p>
+            <ul>
+              <li>Vérifier les prévisions météorologiques pour les prochains jours</li>
+              <li>Ajuster le calendrier d'irrigation en fonction de l'humidité du sol</li>
+              <li>Vérifier le bon fonctionnement du système d'irrigation</li>
+            </ul>
+          </div>
+          <div *ngSwitchCase="'traitement'">
+            <p>Recommandations pour le traitement :</p>
+            <ul>
+              <li>Vérifier les conditions météorologiques avant l'application</li>
+              <li>Respecter les doses recommandées</li>
+              <li>Porter les équipements de protection appropriés</li>
+            </ul>
+          </div>
+          <div *ngSwitchCase="'fertilisation'">
+            <p>Recommandations pour la fertilisation :</p>
+            <ul>
+              <li>Analyser les besoins nutritionnels de la culture</li>
+              <li>Appliquer les engrais au moment optimal</li>
+              <li>Éviter l'application avant de fortes pluies</li>
+            </ul>
+          </div>
+          <div *ngSwitchCase="'recolte'">
+            <p>Recommandations pour la récolte :</p>
+            <ul>
+              <li>Vérifier la maturité de la culture</li>
+              <li>Planifier la récolte en fonction des prévisions météorologiques</li>
+              <li>Préparer le matériel nécessaire</li>
+            </ul>
+          </div>
+          <div *ngSwitchDefault>
+            <p>Recommandations générales :</p>
+            <ul>
+              <li>Consulter un conseiller agricole si nécessaire</li>
+              <li>Documenter les actions entreprises</li>
+              <li>Suivre régulièrement l'évolution de la situation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

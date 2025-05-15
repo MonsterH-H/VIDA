@@ -1,0 +1,327 @@
+﻿@use '../../styles/theme' as theme;
+@use "sass:color";
+
+// Variables
+$primary-color: #2c6ecf;
+$primary-light: #e8f0fd;
+$primary-dark: #1c54b2;
+$secondary-color: #49b95e;
+$secondary-light: #e5f7e8;
+$danger-color: #e74c3c;
+$warning-color: #f39c12;
+$info-color: #3498db;
+$text-primary: #333333;
+$text-secondary: #6c757d;
+$background-color: #f8f9fa;
+$card-background: #ffffff;
+$border-color: #eaedf0;
+$shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
+$shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.08);
+$shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+$border-radius: 12px;
+$transition-normal: all 0.3s ease;
+$font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+.farmer-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    position: relative;
+    
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -8px;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-color), #49b95e);
+      border-radius: 2px;
+    }
+  }
+  
+  .btn-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-light);
+    
+    i {
+      font-size: 0.8rem;
+    }
+    
+    &:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top: 3px solid var(--primary-color);
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.alert {
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  
+  &.alert-danger {
+    background-color: rgba(231, 76, 60, 0.2);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
+    
+    i {
+      margin-right: 8px;
+    }
+  }
+}
+
+.content-container {
+  .no-data {
+    text-align: center;
+    padding: 3rem 0;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    
+    i {
+      font-size: 3rem;
+      color: var(--text-secondary);
+      opacity: 0.3;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+  }
+}
+
+.farmer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.farmer-card {
+  @include theme.adaptive-card;
+  overflow: hidden;
+  
+  .card-header {
+    padding: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color), #49b95e);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 500;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+  }
+  
+  .card-content {
+    padding: var(--spacing-lg);
+    
+    .contact-info {
+      margin-bottom: var(--spacing-lg);
+      
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        
+        i {
+          color: var(--primary-color);
+          width: 16px;
+        }
+        
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+    
+    .metrics {
+      display: flex;
+      gap: 10px;
+      
+      .metric {
+        flex: 1;
+        text-align: center;
+        background-color: rgba(44, 110, 207, 0.1);
+        padding: 10px;
+        border-radius: 8px;
+        
+        &:nth-child(2) {
+          background-color: rgba(73, 185, 94, 0.1);
+        }
+        
+        .value {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+        
+        .label {
+          display: block;
+          font-size: 0.8rem;
+          color: var(--text-secondary);
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+  
+  .card-actions {
+    display: flex;
+    border-top: 1px solid var(--border-color);
+    
+    .btn-action {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: var(--spacing-md);
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+      color: var(--text-secondary);
+      
+      &:not(:last-child) {
+        border-right: 1px solid var(--border-color);
+      }
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+      }
+      
+      &.btn-details {
+        color: var(--primary-color);
+      }
+      
+      &.btn-parcelles {
+        color: #49b95e;
+      }
+      
+      &.btn-besoins {
+        color: #f39c12;
+      }
+      
+      &.btn-delete {
+        color: #e74c3c;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    
+    .btn-add {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  .card-actions {
+    flex-wrap: wrap;
+    
+    .btn-action {
+      flex: 1 0 calc(50% - 4px);
+      
+      &.btn-delete {
+        flex: 0 0 calc(100% - 8px);
+        margin-top: 8px;
+      }
+    }
+  }
+}
+
+// Styles spécifiques du composant, pas besoin de styles globaux pour le thème sombre ici
+// car ils sont déjà définis dans src/styles.scss 

@@ -1,0 +1,74 @@
+<div class="farmer-container">
+  <div class="header-section">
+    <h1>Liste des Agriculteurs</h1>
+    <button [routerLink]="['/farmers', 'new']" class="btn-add">
+      <i class="fas fa-plus"></i> Ajouter un agriculteur
+    </button>
+  </div>
+  
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="fas fa-exclamation-circle"></i> {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && !error" class="content-container">
+    <div *ngIf="farmers.length === 0" class="no-data">
+      <i class="fas fa-users"></i>
+      <p>Aucun agriculteur enregistré. Commencez par en ajouter un !</p>
+    </div>
+    
+    <div *ngIf="farmers.length > 0" class="farmer-grid">
+      <div *ngFor="let farmer of farmers" class="farmer-card">
+        <div class="card-header">
+          <div class="avatar">{{ farmer.prenom.charAt(0) }}{{ farmer.nom.charAt(0) }}</div>
+          <h3>{{ farmer.prenom }} {{ farmer.nom }}</h3>
+        </div>
+        <div class="card-content">
+          <div class="contact-info">
+            <div class="info-item">
+              <i class="fas fa-envelope"></i>
+              <span>{{ farmer.email }}</span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-phone-alt"></i>
+              <span>{{ farmer.telephone }}</span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>{{ farmer.ville }}, {{ farmer.pays }}</span>
+            </div>
+          </div>
+          
+          <div class="metrics">
+            <div class="metric">
+              <span class="value">{{ farmer.parcelles.length }}</span>
+              <span class="label">Parcelles</span>
+            </div>
+            <div class="metric">
+              <span class="value">{{ farmer.besoins.length }}</span>
+              <span class="label">Besoins</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button [routerLink]="['/farmers', farmer.id]" class="btn-action btn-details">
+            <i class="fas fa-info-circle"></i> Détails
+          </button>
+          <button [routerLink]="['/farmers', farmer.id, 'parcelles']" class="btn-action btn-parcelles">
+            <i class="fas fa-map"></i> Parcelles
+          </button>
+          <button [routerLink]="['/farmers', farmer.id, 'besoins']" class="btn-action btn-besoins">
+            <i class="fas fa-list-alt"></i> Besoins
+          </button>
+          <button (click)="deleteFarmer(farmer.id)" class="btn-action btn-delete">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

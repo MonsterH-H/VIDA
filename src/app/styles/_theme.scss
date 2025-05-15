@@ -1,0 +1,76 @@
+// Thème pour AgriMeteo
+// Ce fichier définit les variables de couleur pour toute l'application
+@use "sass:color";
+
+// Couleurs de base
+$background-primary: #F8FAFC;
+$background-secondary: #F3F4F6;
+$text-primary: rgba(0, 0, 0, 0.87);
+$text-secondary: rgba(0, 0, 0, 0.6);
+
+// Définition de variables CSS pour une utilisation globale
+:root {
+  // Couleurs primaires
+  --primary-color: #2C6ECF;
+  --primary-light: #60A5FA;
+  --primary-dark: #1E40AF;
+  
+  // Couleurs adaptatives
+  --background-color: #{$background-primary};
+  --background-secondary: #{$background-secondary};
+  --card-background: #FFFFFF;
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --border-color: rgba(0, 0, 0, 0.08);
+  
+  // Ombres
+  --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+  
+  // Espacement
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem; 
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  // Transitions
+  --transition: all 0.3s ease;
+  
+  // Rayons de bordure
+  --border-radius: 12px;
+}
+
+// Fonction pour déterminer la couleur du texte
+@function get-text-color($bg-color) {
+  @if $bg-color == var(--card-background) {
+    @return var(--text-primary);
+  } @else {
+    @return var(--text-primary);
+  }
+}
+
+// Fonction pour ajuster automatiquement la couleur de bordure
+@function get-border-color($bg-color) {
+  @if $bg-color == var(--card-background) {
+    @return var(--border-color);
+  } @else {
+    @return var(--border-color);
+  }
+}
+
+// Mixins pour les styles adaptatifs
+@mixin adaptive-card($bg-color: var(--card-background)) {
+  background-color: $bg-color;
+  color: get-text-color($bg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+  }
+} 

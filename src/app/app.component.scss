@@ -1,0 +1,426 @@
+﻿@use './styles' as vars;
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  transition: var(--transition);
+  
+  &.dark-theme {
+    color-scheme: dark;
+  }
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  padding-top: var(--spacing-xl);
+  padding-bottom: var(--spacing-xxl);
+  position: relative;
+  z-index: 1;
+  
+  @media (max-width: 768px) {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+}
+
+.app-footer {
+  background-color: var(--card-background);
+  border-top: 1px solid var(--border-color);
+  padding: var(--spacing-lg) 0;
+  transition: var(--transition);
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+  
+  .footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-md);
+    }
+    
+    p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .footer-links {
+      display: flex;
+      gap: var(--spacing-lg);
+      
+      @media (max-width: 576px) {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--spacing-md);
+      }
+      
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: var(--transition);
+        
+        &:hover {
+          color: var(--primary-color);
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--background-color);
+  transition: all 0.3s ease;
+}
+
+/* Animations et transitions */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles pour les cartes */
+.card {
+  background-color: var(--card-background);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark-theme & {
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    
+    &:hover {
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+/* Styles pour les boutons */
+.custom-button {
+  border-radius: 12px;
+  padding: 12px 26px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+    color: white;
+  }
+  
+  &.secondary {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    
+    .dark-theme & {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+  }
+  
+  &.small {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+  
+  &.large {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* Styles pour les badges */
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  
+  mat-icon {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+    margin-right: 4px;
+  }
+  
+  &.primary {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  &.warning {
+    background-color: var(--warning-color);
+    color: white;
+  }
+  
+  &.success {
+    background-color: var(--success-color);
+    color: white;
+  }
+  
+  &.small {
+    padding: 2px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Styles pour les formulaires */
+.form-group {
+  margin-bottom: 24px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1rem;
+    
+    &:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+    }
+    
+    .dark-theme & {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      
+      &:focus {
+        border-color: var(--primary-color-light);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2);
+      }
+    }
+  }
+}
+
+// Styles globaux pour les cartes
+:host ::ng-deep {
+  .mat-mdc-card {
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    position: relative;
+    
+    &:hover {
+      box-shadow: var(--box-shadow-hover);
+    }
+    
+    .mat-mdc-card-header {
+      padding: var(--spacing-md) var(--spacing-md) 0;
+      
+      .mat-mdc-card-title {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+      }
+      
+      .mat-mdc-card-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+    }
+    
+    .mat-mdc-card-content {
+      padding: var(--spacing-md);
+      color: var(--text-primary);
+    }
+    
+    .mat-mdc-card-actions {
+      padding: 0 var(--spacing-md) var(--spacing-md);
+      display: flex;
+      gap: 8px;
+    }
+  }
+  
+  // Styles des boutons
+  .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button {
+    border-radius: var(--border-radius-md);
+    transition: var(--transition);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    
+    &.mat-primary {
+      color: white;
+      background-color: var(--primary-color);
+      
+      &:hover {
+        background-color: var(--primary-color-dark);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+    
+    &.mat-accent {
+      color: white;
+      background-color: var(--accent-color);
+      
+      &:hover {
+        background-color: var(--accent-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+    
+    &.mat-stroked-button {
+      border: 2px solid currentColor;
+      
+      &.mat-primary {
+        color: var(--primary-color);
+        background-color: transparent;
+        
+        &:hover {
+          background-color: rgba(var(--primary-color-rgb), 0.05);
+        }
+      }
+    }
+  }
+  
+  // Styles des champs de formulaire
+  .mat-mdc-form-field {
+    width: 100%;
+    
+    .mat-mdc-form-field-flex {
+      background-color: var(--surface-color);
+      border-radius: var(--border-radius-md);
+      transition: box-shadow 0.3s ease;
+    }
+    
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--surface-color);
+      padding: 4px 8px;
+    }
+    
+    .mat-mdc-form-field-label {
+      color: var(--text-secondary);
+    }
+    
+    .mat-mdc-input-element {
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+    
+    .mat-mdc-form-field-underline {
+      background-color: var(--border-color);
+    }
+    
+    &.mat-focused {
+      .mat-mdc-form-field-flex {
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+      }
+    }
+  }
+  
+  // Styles pour tableaux
+  .mat-mdc-table {
+    background-color: var(--card-background);
+    color: var(--text-primary);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    
+    .mat-mdc-header-row {
+      background-color: var(--surface-color);
+      height: 56px;
+    }
+    
+    .mat-mdc-header-cell {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    
+    .mat-mdc-row {
+      height: 54px;
+      border-bottom: 1px solid var(--border-color);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      &:hover {
+        background-color: var(--surface-color);
+      }
+    }
+    
+    .mat-mdc-cell {
+      color: var(--text-primary);
+    }
+  }
+}
+
+// Animation de transition pour le thème
+.app-container, .app-footer, :host ::ng-deep .mat-mdc-card {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}

@@ -1,0 +1,391 @@
+<div class="dashboard-container" [ngClass]="{'dark-theme': darkMode}">
+  <!-- Barre de navigation moderne avec effet glassmorphisme -->
+  <div class="nav-glass">
+    <div class="logo-container">
+      <div class="logo-badge">
+        <span class="logo-icon">🌱</span>
+      </div>
+      <h2 class="app-title">AgriMeteo<span class="version-badge">2025</span></h2>
+    </div>
+    
+    <div class="nav-search">
+      <div class="search-container">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Rechercher un agriculteur, une parcelle..." />
+      </div>
+    </div>
+    
+    <div class="nav-actions">
+      <div class="notification-badge">
+        <mat-icon [matBadge]="getTotalBesoins()" matBadgeColor="accent">notifications</mat-icon>
+      </div>
+      <div class="user-profile">
+        <div class="avatar-container">
+          <div class="status-indicator"></div>
+          <span class="avatar-text">AG</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- En-tête avec fil d'Ariane et actions -->
+  <div class="dashboard-header">
+    <div class="breadcrumb">
+      <span>Accueil</span>
+      <mat-icon>chevron_right</mat-icon>
+      <span class="current">Tableau de bord</span>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn-neo btn-primary" [routerLink]="['/farmers/new']">
+        <mat-icon>person_add</mat-icon>
+        <span>Ajouter un agriculteur</span>
+      </button>
+      <button class="btn-neo btn-secondary" (click)="refreshData()">
+        <mat-icon>refresh</mat-icon>
+        <span>Actualiser</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- États et notifications -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-animation">
+      <div class="loading-circle"></div>
+      <div class="loading-circle"></div>
+      <div class="loading-circle"></div>
+    </div>
+    <h3>Chargement des données en cours</h3>
+    <p>Nous récupérons les dernières informations météorologiques...</p>
+  </div>
+  
+  <div *ngIf="error" class="error-container">
+    <div class="error-icon">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <div class="error-content">
+      <h3>Oups ! Une erreur est survenue</h3>
+      <p>{{ error }}</p>
+      <button class="btn-neo btn-error" (click)="refreshData()">
+        <mat-icon>refresh</mat-icon>
+        <span>Réessayer</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!loading && !error">
+    <!-- État vide -->
+    <div *ngIf="farmers.length === 0" class="empty-state">
+      <div class="empty-illustration">
+        <div class="illustration-container">
+          <mat-icon class="illustration-icon">agriculture</mat-icon>
+        </div>
+      </div>
+      <h2>Aucun agriculteur enregistré</h2>
+      <p>Pour commencer à utiliser AgriMeteo, ajoutez votre premier agriculteur.</p>
+      <button class="btn-pulse" [routerLink]="['/farmers/new']">
+        <mat-icon>add</mat-icon>
+        <span>Commencer</span>
+      </button>
+    </div>
+
+    <!-- Contenu principal du dashboard -->
+    <div *ngIf="farmers.length > 0" class="dashboard-grid">
+      <!-- Widgets d'aperçu en grille -->
+      <div class="insights-grid">
+        <!-- Agriculteurs -->
+        <div class="insight-card gradient-purple">
+          <div class="insight-icon">
+            <mat-icon>group</mat-icon>
+          </div>
+          <div class="insight-content">
+            <div class="insight-value">{{ farmers.length }}</div>
+            <div class="insight-label">Agriculteurs</div>
+          </div>
+          <div class="insight-chart">
+            <div class="mini-bar"></div>
+          </div>
+        </div>
+        
+        <!-- Parcelles -->
+        <div class="insight-card gradient-blue">
+          <div class="insight-icon">
+            <mat-icon>grass</mat-icon>
+          </div>
+          <div class="insight-content">
+            <div class="insight-value">{{ getTotalParcelles() }}</div>
+            <div class="insight-label">Parcelles</div>
+          </div>
+          <div class="insight-chart">
+            <div class="mini-bar"></div>
+          </div>
+        </div>
+        
+        <!-- Besoins -->
+        <div class="insight-card gradient-amber">
+          <div class="insight-icon">
+            <mat-icon>warning_amber</mat-icon>
+          </div>
+          <div class="insight-content">
+            <div class="insight-value">{{ getTotalBesoins() }}</div>
+            <div class="insight-label">Besoins actifs</div>
+          </div>
+          <div class="insight-chart">
+            <div class="mini-bar"></div>
+          </div>
+        </div>
+        
+        <!-- Température -->
+        <div class="insight-card gradient-red">
+          <div class="insight-icon">
+            <mat-icon>device_thermostat</mat-icon>
+          </div>
+          <div class="insight-content">
+            <div class="insight-value">{{ getAverageTemperature() | number:'1.0-1' }}°C</div>
+            <div class="insight-label">Temp. moyenne</div>
+          </div>
+          <div class="insight-chart">
+            <div class="mini-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphiques et tendances -->
+      <div class="charts-grid">
+        <!-- Tendances des besoins par type -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div class="header-title">
+              <h3>Tendances des besoins</h3>
+              <span class="subtitle">Distribution par type de besoin</span>
+            </div>
+            <div class="header-actions">
+              <div class="time-filter">
+                <span>Ce mois</span>
+                <mat-icon>expand_more</mat-icon>
+              </div>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="stacked-chart">
+              <div class="chart-area">
+                <div class="chart-columns">
+                  <div class="chart-column" *ngFor="let data of monthlyBesoins">
+                    <div class="column-label">{{ data.month }}</div>
+                    <div class="stacked-bars">
+                      <div class="bar irrigation" [style.height.%]="data.irrigation * 3"></div>
+                      <div class="bar treatment" [style.height.%]="data.traitement * 3"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="axis-y">
+                  <div class="axis-line"></div>
+                  <div class="tick" *ngFor="let tick of [0, 5, 10, 15, 20]">
+                    <span class="tick-label">{{ tick }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <div class="color-dot irrigation"></div>
+                  <span>Irrigation</span>
+                </div>
+                <div class="legend-item">
+                  <div class="color-dot treatment"></div>
+                  <span>Traitement</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Température journalière -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div class="header-title">
+              <h3>Suivi de température</h3>
+              <span class="subtitle">Température moyenne par heure</span>
+            </div>
+            <div class="header-actions">
+              <div class="time-filter">
+                <span>Aujourd'hui</span>
+                <mat-icon>expand_more</mat-icon>
+              </div>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="line-chart">
+              <div class="chart-area">
+                <div class="gradient-area"></div>
+                <div class="line"></div>
+                <div class="points">
+                  <div class="point" *ngFor="let hour of [7, 9, 11, 13, 15, 17]; let i = index" 
+                    [style.left.%]="i * 20"
+                    [style.bottom.%]="20 + i * 5 + (i % 2) * 10"></div>
+                </div>
+              </div>
+              <div class="time-axis">
+                <div class="time-label" *ngFor="let hour of [7, 9, 11, 13, 15, 17]">
+                  {{ hour }}:00
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distribution des cultures -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div class="header-title">
+              <h3>Cultures principales</h3>
+              <span class="subtitle">Répartition des parcelles par culture</span>
+            </div>
+          </div>
+          <div class="card-content cultures-content">
+            <div class="donut-container">
+              <div class="donut-chart">
+                <div class="donut-hole">
+                  <div class="donut-info">
+                    <div class="donut-value">{{ getTotalParcelles() }}</div>
+                    <div class="donut-label">Total</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="cultures-list">
+              <div class="culture-item" *ngFor="let culture of culturesCount; let i = index">
+                <div class="culture-rank">{{ i + 1 }}</div>
+                <div class="culture-icon">{{ culture.icon }}</div>
+                <div class="culture-info">
+                  <div class="culture-name">{{ culture.nom }}</div>
+                  <div class="culture-bar">
+                    <div class="bar-progress" [style.width.%]="(culture.count / getTotalParcelles()) * 100"></div>
+                  </div>
+                </div>
+                <div class="culture-count">{{ culture.count }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Répartition géographique -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div class="header-title">
+              <h3>Répartition régionale</h3>
+              <span class="subtitle">Agriculteurs par région</span>
+            </div>
+          </div>
+          <div class="card-content map-content">
+            <div class="map-illustration">
+              <div class="map-overlay">
+                <div class="map-marker north" [class.active]="regionsDistribution.nord > 0">
+                  <div class="marker-pulse"></div>
+                  <div class="marker-dot">{{ regionsDistribution.nord }}</div>
+                </div>
+                <div class="map-marker south" [class.active]="regionsDistribution.sud > 0">
+                  <div class="marker-pulse"></div>
+                  <div class="marker-dot">{{ regionsDistribution.sud }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="region-stats">
+              <div class="region-item">
+                <div class="region-color nord"></div>
+                <div class="region-name">Nord</div>
+                <div class="region-count">{{ regionsDistribution.nord }}</div>
+                <div class="region-percent">
+                  {{ regionsDistribution.nord > 0 ? 
+                    (regionsDistribution.nord / (regionsDistribution.nord + regionsDistribution.sud) * 100 | number:'1.0-0') : 0 }}%
+                </div>
+              </div>
+              <div class="region-item">
+                <div class="region-color sud"></div>
+                <div class="region-name">Sud</div>
+                <div class="region-count">{{ regionsDistribution.sud }}</div>
+                <div class="region-percent">
+                  {{ regionsDistribution.sud > 0 ? 
+                    (regionsDistribution.sud / (regionsDistribution.nord + regionsDistribution.sud) * 100 | number:'1.0-0') : 0 }}%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dernières parcelles ajoutées -->
+      <div class="recent-activity">
+        <div class="card-header">
+          <div class="header-title">
+            <h3>Activité récente</h3>
+            <span class="subtitle">{{ getParcellesThisMonth() }} nouvelles parcelles ce mois</span>
+          </div>
+          <div class="header-actions">
+            <button class="btn-text">
+              <span>Voir tout</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="activity-timeline">
+          <div class="timeline-day">
+            <div class="day-label">
+              <div class="day-number">17</div>
+              <div class="day-month">JUN</div>
+            </div>
+            <div class="day-events">
+              <div class="event-card">
+                <div class="event-icon add">
+                  <mat-icon>add</mat-icon>
+                </div>
+                <div class="event-content">
+                  <div class="event-title">Nouvelle parcelle ajoutée</div>
+                  <div class="event-description">Parcelle de Blé - 4.5 ha</div>
+                </div>
+                <div class="event-time">14:30</div>
+              </div>
+              <div class="event-card">
+                <div class="event-icon alert">
+                  <mat-icon>priority_high</mat-icon>
+                </div>
+                <div class="event-content">
+                  <div class="event-title">Besoin d'irrigation signalé</div>
+                  <div class="event-description">Parcelle de Maïs - Priorité haute</div>
+                </div>
+                <div class="event-time">11:15</div>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-day">
+            <div class="day-label">
+              <div class="day-number">16</div>
+              <div class="day-month">JUN</div>
+            </div>
+            <div class="day-events">
+              <div class="event-card">
+                <div class="event-icon user">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <div class="event-content">
+                  <div class="event-title">Nouvel agriculteur enregistré</div>
+                  <div class="event-description">Jean Dupont - 3 parcelles</div>
+                </div>
+                <div class="event-time">09:45</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Pied de page du tableau de bord -->
+  <div class="dashboard-footer" *ngIf="!loading && farmers.length > 0">
+    <div class="footer-content">
+      <div class="footer-info">
+        <span>Dernière mise à jour : {{ getCurrentDate() | date:'dd MMM yyyy, HH:mm' }}</span>
+      </div>
+
+    </div>
+  </div>
+</div>
