@@ -46,10 +46,10 @@ import { MatIconModule } from '@angular/material/icon';
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
         
-        mat-icon {
-          font-size: 28px;
+        .logo-svg {
           width: 28px;
           height: 28px;
+          object-fit: contain;
         }
       }
       
@@ -97,4 +97,4 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class LogoComponent {
   readonly darkMode = input(false);
-} 
+}
