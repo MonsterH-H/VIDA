@@ -7,7 +7,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HistoricalWeatherService {
-  private geoUrl = 'http://api.openweathermap.org/geo/1.0/direct';
+  private geoUrl = 'https://api.openweathermap.org/geo/1.0/direct';
   private apiKey = 'f3940c105f51ea443fe8d8f04716efe3';
 
   constructor(private http: HttpClient) { }
