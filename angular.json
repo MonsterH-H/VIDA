@@ -102,6 +102,17 @@
             ],
             "scripts": []
           }
+        },
+        "e2e": {
+          "builder": "playwright-ng-schematics:playwright",
+          "options": {
+            "devServerTarget": "VIDA:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "VIDA:serve:production"
+            }
+          }
         }
       }
     }
